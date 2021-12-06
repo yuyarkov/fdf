@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   string_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dirony <dirony@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 20:14:53 by dirony            #+#    #+#             */
-/*   Updated: 2021/11/26 20:45:51 by dirony           ###   ########.fr       */
+/*   Updated: 2021/11/29 20:17:26 by dirony           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ char	*ft_strdup(const char *str)
 	ft_strlcpy(result, str, size);
 	return (result);
 }
+
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*result;
@@ -79,7 +80,6 @@ char	*ft_strjoin(char *s1, char *s2)
 	result[i] = '\0';
 	return (result);
 }
-
 
 char	*ft_strchr(char *str, char ch)
 {

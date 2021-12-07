@@ -6,7 +6,7 @@
 /*   By: dirony <dirony@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/29 19:49:23 by dirony            #+#    #+#             */
-/*   Updated: 2021/12/06 22:10:06 by dirony           ###   ########.fr       */
+/*   Updated: 2021/12/07 22:22:01 by dirony           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ char	*read_string_from_file(char *file_name)
 	char	buff[BUFF_SIZE + 1];
 
 	fd = open(file_name, O_RDONLY);
+	if (fd < 0)
+		return (NULL);
 	bytes_read = read(fd, buff, BUFF_SIZE);
 	buff[bytes_read] = '\0';
 	result = ft_strdup(buff);
@@ -115,15 +117,11 @@ t_dot	**parse_map(char *file_name, t_map_data *map_data)
 		return (NULL);
 	map_data->width = get_width(s);
 	map_data->height = get_height(s);
-	map_data->zoom = MAX_W / (map_data->width + 50);
-	map_data->offset = (MAX_W - map_data->width * map_data->zoom) / 2;
-	map_data->v_offset = (MAX_H - map_data->height * map_data->zoom) / 2;
-	map_data->rotation = 0.52;
-	map_data->rotate_axe_x = 0;
-	map_data->rotate_axe_y = 0;
-	map_data->rotate_axe_z = -1.6;
 	map = malloc(map_data->height * sizeof(t_dot *));
 	if (NULL == map)
 		return (NULL);
-	return (get_map_from_string(s, map, map_data));
+	map = get_map_from_string(s, map, map_data);
+	set_max_alt(map, map_data);
+	set_default(map_data);
+	return (map);
 }

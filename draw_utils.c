@@ -6,7 +6,7 @@
 /*   By: dirony <dirony@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/06 21:35:22 by dirony            #+#    #+#             */
-/*   Updated: 2021/12/06 22:17:02 by dirony           ###   ########.fr       */
+/*   Updated: 2021/12/07 21:45:12 by dirony           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,129 +14,86 @@
 
 void	my_mlx_pixel_put(t_data *pic, int x, int y, int color)
 {
-	char	*dst;
+	char	*dest;
 
 	if (x > 0 && x < (MAX_W - M_LEFT) && y > 0 && y < (MAX_H - M_TOP))
 	{
-		dst = pic->addr + (y * pic->line_length + x * (pic->bits_per_pixel / 8));
-		*(unsigned int*)dst = color;
+		dest = pic->addr + (y * pic->line_len + x * (pic->bits_per_p / 8));
+		*(unsigned int *)dest = color;
 	}
 }
 
-void drawLine(t_pixel pixel1, t_pixel pixel2, t_data *pic, int color)
+void	get_delta(t_pixel *pixel1, t_pixel *pixel2)
 {
-	int deltaX = abs(pixel2.x - pixel1.x);
-    int deltaY = abs(pixel2.y - pixel1.y);
-    int signX = pixel1.x < pixel2.x ? 1 : -1;
-    int signY = pixel1.y < pixel2.y ? 1 : -1;
-    int error = deltaX - deltaY;
-
-    while(pixel1.x != pixel2.x || pixel1.y != pixel2.y)
-    {
-		if ((pixel1.x < 0 && pixel1.x > (MAX_W - M_LEFT)) || (pixel1.y < 0 && pixel1.y > (MAX_H - M_TOP)))
-			break;
-		my_mlx_pixel_put(pic, pixel1.x, pixel1.y, color);
-        int error2 = error * 2;
-        if(error2 > -deltaY)
-        {
-            error -= deltaY;
-            pixel1.x += signX;
-        }
-        if(error2 < deltaX)
-        {
-            error += deltaX;
-            pixel1.y += signY;
-        }
-    }
+	if (pixel1->x < pixel2->x)
+		pixel1->sign_x = 1;
+	else
+		pixel1->sign_x = -1;
+	if (pixel1->y < pixel2->y)
+		pixel1->sign_y = 1;
+	else
+		pixel1->sign_y = -1;
+	pixel1->delta_x = abs(pixel2->x - pixel1->x);
+	pixel1->delta_y = abs(pixel2->y - pixel1->y);
+	pixel1->error = pixel1->delta_x - pixel1->delta_y;
 }
 
-
-t_pixel	iso_pixel(t_pixel pixel, double z, t_map_data *map_data)
+void	draw_line(t_pixel pixel1, t_pixel pixel2, t_data *pic)
 {
-	t_pixel result;
-	float	x;
-	float	y;
-	float	x2;
-	float	y2;
-	float	iso_angle;
-	float	angle_z;
-	float	angle_x;
-	float	angle_y;
-
-	iso_angle = map_data->rotation; //0.6;// 0.523599
-	angle_x = map_data->rotate_axe_x;
-	angle_y = map_data->rotate_axe_y;
-	angle_z = map_data->rotate_axe_z;
-	x = pixel.x * cos(angle_z) + pixel.y * sin(angle_z);
-	y = -pixel.x * sin(angle_z) + pixel.y * cos(angle_z);
-	y2 = y * cos(angle_x) + z * sin(angle_x);
-	z = -y * sin(angle_x) + z * cos(angle_x);
-	y = y2;
-	x2 = x * cos(angle_y) + z * sin(angle_y);
-	z = -x * sin(angle_y) + z * cos(angle_y);
-	x = x2;
-	result.x = -(x - y) * map_data->zoom * cos(iso_angle) + map_data->offset;
-	result.y = (x + y) * map_data->zoom * sin(iso_angle) - z * map_data->zoom + map_data->v_offset;
-	return (result);
-}
-
-void	draw_iso_grid(t_dot **map, t_map_data *map_data, t_data *pic)
-{
-	int	i;
-	int	j;
 	int	color;
-	t_pixel pixel1;
-	t_pixel pixel2;
 
-	i = 0;
-	color = DEF_COLOR;
- 	while (i < map_data->height - 1)
- 	{
-  		j = 0;
-  		while (j < map_data->width)
-  		{
-			pixel1.x = i;
-			pixel1.y = j;
-			pixel1 = iso_pixel(pixel1, map[i][j].alt, map_data);
-			pixel2.x = i + 1;
-			pixel2.y = j;
-			pixel2 = iso_pixel(pixel2, map[i + 1][j].alt, map_data);
-			if (map[i][j].color == map[i + 1][j].color)
-				color = map[i][j].color;
-			drawLine(pixel1, pixel2, pic, color);
-			j++;
-  		}
-  		i++;
+	get_delta(&pixel1, &pixel2);
+	while (pixel1.x != pixel2.x || pixel1.y != pixel2.y)
+	{
+		color = get_gradient(pixel1, pixel2);
+		my_mlx_pixel_put(pic, pixel1.x, pixel1.y, color);
+		pixel2.error = pixel1.error * 2;
+		if (pixel2.error > -pixel1.delta_y)
+		{
+			pixel1.error -= pixel1.delta_y;
+			pixel1.x += pixel1.sign_x;
+		}
+		if (pixel2.error < pixel1.delta_x)
+		{
+			pixel1.error += pixel1.delta_x;
+			pixel1.y += pixel1.sign_y;
+		}
 	}
-	i = 0;
-	while (i < map_data->height)
- 	{
-  		j = 0;
-  		while (j < map_data->width - 1)
-  		{
-			pixel1.x = i;
-			pixel1.y = j;
-			pixel1 = iso_pixel(pixel1, map[i][j].alt, map_data);
-			pixel2.x = i;
-			pixel2.y = j + 1;
-			pixel2 = iso_pixel(pixel2, map[i][j + 1].alt, map_data);
-			if (map[i][j].color == map[i][j + 1].color)
-				color = map[i][j].color;
-   			drawLine(pixel1, pixel2, pic, color);
-			j++;
-  		}
-  		i++;
-	}
- }
+}
 
-void	move_img(int keycode, t_map_data *map_data)
+int	get_gradient(t_pixel pixel1, t_pixel pixel2)
 {
-	if (keycode == 124)
-		map_data->offset += 20;
-	if (keycode == 123)
-		map_data->offset += -20;
-	if (keycode == 126)
-		map_data->v_offset += -20;
-	if (keycode == 125)
-		map_data->v_offset += 20;
+	float	progress;
+	int		orig_dist;
+	int		curr_dist;
+
+	orig_dist = sqrt(pixel1.delta_x * pixel1.delta_x
+			+ pixel1.delta_y * pixel1.delta_y);
+	curr_dist = sqrt((pixel1.x - pixel2.x) * (pixel1.x - pixel2.x)
+			+ (pixel1.y - pixel2.y) * (pixel1.y - pixel2.y));
+	progress = (float)curr_dist / orig_dist;
+	return (get_gradient_color(pixel1.color, pixel2.color, progress));
+}
+
+int	get_gradient_color(int color1, int color2, float progress)
+{
+	t_color	col1;
+	t_color	col2;
+	t_color	res;
+	float	left;
+
+	col1.a = (color1 & 0xff000000) >> 24;
+	col1.r = (color1 & 0x00ff0000) >> 16;
+	col1.g = (color1 & 0x0000ff00) >> 8;
+	col1.b = color1 & 0x000000ff;
+	col2.a = (color2 & 0xff000000) >> 24;
+	col2.r = (color2 & 0x00ff0000) >> 16;
+	col2.g = (color2 & 0x0000ff00) >> 8;
+	col2.b = color2 & 0x000000ff;
+	left = (1 - progress);
+	res.a = (int)(col1.a * progress + col2.a * left);
+	res.r = (int)(col1.r * progress + col2.r * left);
+	res.g = (int)(col1.g * progress + col2.g * left);
+	res.b = (int)(col1.b * progress + col2.b * left);
+	return ((res.a << 24) + (res.r << 16) + (res.g << 8) + res.b);
 }

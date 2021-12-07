@@ -6,7 +6,7 @@
 #    By: dirony <dirony@student.21-school.ru>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/10/05 20:08:26 by dirony            #+#    #+#              #
-#    Updated: 2021/12/06 22:22:13 by dirony           ###   ########.fr        #
+#    Updated: 2021/12/07 20:12:18 by dirony           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ HEADER = fdf.h
 SRC = 		main.c			number_utils.c\
 			string_utils.c	parse_utils.c\
 			draw_utils.c	rotation_utils.c\
-			keycode_utils.c
+			iso_utils.c		keycode_utils.c
 
 OBJ = ${SRC:.c=.o}
 

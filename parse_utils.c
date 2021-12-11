@@ -6,7 +6,7 @@
 /*   By: dirony <dirony@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/29 19:49:23 by dirony            #+#    #+#             */
-/*   Updated: 2021/12/07 22:22:01 by dirony           ###   ########.fr       */
+/*   Updated: 2021/12/11 19:51:24 by dirony           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ int	get_width(char *s)
 	{
 		if (*s != ' ')
 		{
+			if (!ft_strchr(VALID_SYMBOLS, *s))
+				flag = 0;
 			if (flag)
 			{
 				counter++;
@@ -117,11 +119,17 @@ t_dot	**parse_map(char *file_name, t_map_data *map_data)
 		return (NULL);
 	map_data->width = get_width(s);
 	map_data->height = get_height(s);
+	if (!map_data->width)
+	{
+		free(s);
+		return (NULL);
+	}
 	map = malloc(map_data->height * sizeof(t_dot *));
 	if (NULL == map)
 		return (NULL);
 	map = get_map_from_string(s, map, map_data);
 	set_max_alt(map, map_data);
-	set_default(map_data);
+	map_data->iso_projection = 1;
+	set_def_position(map_data);
 	return (map);
 }

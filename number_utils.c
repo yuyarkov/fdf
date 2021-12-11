@@ -6,13 +6,13 @@
 /*   By: dirony <dirony@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 21:50:14 by dirony            #+#    #+#             */
-/*   Updated: 2021/12/06 19:31:56 by dirony           ###   ########.fr       */
+/*   Updated: 2021/12/11 14:46:49 by dirony           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
-static int	ft_isdigit(char ch)
+int	ft_isdigit(char ch)
 {
 	if ((ch >= '0') && (ch <= '9'))
 		return (1);
@@ -60,7 +60,7 @@ int	get_hex_digit(char ch)
 	return (0);
 }
 
-static int	ft_is_hexdigit(char ch)
+int	ft_is_hexdigit(char ch)
 {
 	if (ft_strchr(BASE_LOWER, ch) || ft_strchr(BASE_UPPER, ch))
 		return (1);

@@ -6,7 +6,7 @@
 /*   By: dirony <dirony@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 19:11:04 by dirony            #+#    #+#             */
-/*   Updated: 2021/12/07 22:23:04 by dirony           ###   ########.fr       */
+/*   Updated: 2021/12/11 18:16:37 by dirony           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,10 @@ int	main(int argc, char **argv)
 		return (0);
 	map = parse_map(argv[1], map_data);
 	if (!map)
+	{
+		free(map_data);
 		return (0);
+	}
 	mlx_run(map, map_data);
 	return (0);
 }

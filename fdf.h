@@ -6,7 +6,7 @@
 /*   By: dirony <dirony@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 19:12:14 by dirony            #+#    #+#             */
-/*   Updated: 2021/12/07 23:01:37 by dirony           ###   ########.fr       */
+/*   Updated: 2021/12/11 19:14:53 by dirony           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,15 @@
 # include <fcntl.h>
 # include <mlx.h>
 # include <math.h>
-//
-# include <stdio.h> //delete before submission
-//
-
-
 
 # define BUFF_SIZE 40096
-# define DEF_COLOR 16777215 //white
+# define DEF_COLOR 16777215
 # define MAX_W 1920
 # define MAX_H 1080
+# define PI_STEP 0.19634954084
 # define M_LEFT 10
 # define M_TOP 10
+# define VALID_SYMBOLS "-,0x123456789abcdefABCDEF"
 # define BASE_LOWER "0123456789abcdef"
 # define BASE_UPPER "0123456789ABCDEF"
 
@@ -83,6 +80,9 @@ typedef struct s_map_data
 	int		v_offset;
 	int		zoom;
 	int		h_zoom;
+	int		iso_projection;
+	int		adj_x;
+	int		adj_y;
 	t_data	*pic;
 	t_dot	**map;
 }	t_map_data;
@@ -100,6 +100,9 @@ char	*ft_strdup(const char *str);
 char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strchr(char *str, char ch);
 
+int		ft_isdigit(char ch);
+int		ft_is_hexdigit(char ch);
+int		get_hex_digit(char ch);
 char	*ft_atoi(char *s, t_dot *dot);
 char	*ft_atoi_hex(char *s, t_dot *dot);
 
@@ -121,8 +124,11 @@ void	rotate_axe_y(int keycode, t_map_data *map_data);
 void	rotate_axe_z(int keycode, t_map_data *map_data);
 void	rotate_iso_img(int keycode, t_map_data *map_data);
 void	move_img(int keycode, t_map_data *map_data);
-void	set_default(t_map_data *map_data);
 void	set_max_alt(t_dot **map, t_map_data *map_data);
+void	set_def_offsets(int scale, t_map_data *map_data);
+void	set_def_position(t_map_data *map_data);
+
+t_pixel	rotate_flat(t_pixel pixel, t_map_data *map_data);
 void	draw_flat_h(t_dot **map, t_map_data *map_data, t_data *pic);
 void	draw_flat_v(t_dot **map, t_map_data *map_data, t_data *pic);
 
